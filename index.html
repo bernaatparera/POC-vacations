@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Procesando solicitud...</title>
+    <style>
+        body { font-family: Segoe UI, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f4f6f8; }
+        .card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; max-width: 400px; }
+        .icon { font-size: 48px; }
+        h2 { color: #2c3e50; }
+        p { color: #555; }
+    </style>
+</head>
+<body>
+<div class="card" id="msg">
+    <div class="icon">⏳</div>
+    <h2>Procesando...</h2>
+    <p>Por favor espera un momento.</p>
+</div>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const fechaInicio = params.get("fechaInicio");
+    const fechaFin = params.get("fechaFin");
+    const empleado = params.get("empleado");
+
+    const url = "https://defaulta1d05402289b4650b7b36843c2f8be.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6948f0d213fe4aaf8116f21a7698fc61/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=V6v9e3PJ-GTflyOi1xwqx6NueRIoMTRe9Rsmzk8Y6LU";
+
+    fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fechaInicio, fechaFin, empleado })
+    })
+    .then(res => {
+        if (res.ok || res.status === 202) {
+            document.getElementById("msg").innerHTML = `
+                <div class="icon">✅</div>
+                <h2 style="color:#28a745">Vacaciones aprobadas</h2>
+                <p>La solicitud de <strong>${empleado}</strong> ha sido aprobada correctamente.</p>
+            `;
+        } else {
+            throw new Error(res.status);
+        }
+    })
+    .catch(() => {
+        document.getElementById("msg").innerHTML = `
+            <div class="icon">❌</div>
+            <h2 style="color:#dc3545">Error</h2>
+            <p>No se pudo procesar la solicitud. Inténtalo de nuevo.</p>
+        `;
+    });
+</script>
+</body>
+</html>
